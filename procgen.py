@@ -106,7 +106,6 @@ def generate_dungeon(
     max_monsters_per_room: int,
     max_items_per_room: int,
     engine: Engine,
-    player: Entity,
 ) -> GameMap:
     """Generate a new dungeon map."""
     player = engine.player

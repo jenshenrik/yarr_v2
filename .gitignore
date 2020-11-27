@@ -1,5 +1,8 @@
 **.dat
 
+# Saved games
+*.sav
+
 # Vim files
 **.un~
 **.sw*
