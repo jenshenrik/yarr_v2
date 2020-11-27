@@ -5,7 +5,7 @@ from typing import Iterable, Iterator, Optional, TYPE_CHECKING
 import numpy as np
 from tcod.console import Console
 
-from entity import Actor
+from entity import Actor, Item
 import tile_types
 
 if TYPE_CHECKING:
@@ -40,6 +40,10 @@ class GameMap:
             for entity in self.entities
             if isinstance(entity, Actor) and entity.is_alive
         )
+
+    @property
+    def items(self) -> Iterator[Item]:
+        yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     def get_actor_at_location(self, x: int, y: int) -> Optional[Actor]:
         for actor in self.actors:
@@ -77,8 +81,8 @@ class GameMap:
         )
 
         entities_sorted_for_rendering = sorted(
-                self.entities, key=lambda x: x.render_order.value
-                )
+            self.entities, key=lambda x: x.render_order.value
+        )
 
         for entity in entities_sorted_for_rendering:
             # Only print entities that are in the FOV
