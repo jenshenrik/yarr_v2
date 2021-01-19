@@ -187,6 +187,8 @@ def generate_dungeon(
         if len(rooms) == 0:
             # this is the first room, and the starting point
             player.place(*new_room.center, dungeon)
+            dungeon.upstairs_location = new_room.center
+            dungeon.tiles[new_room.center] = tile_types.up_stairs
         else:
             # Dig out a tunnel between this room and the previous one
             for x, y in tunnel_between(rooms[-1].center, new_room.center):

@@ -181,9 +181,14 @@ class TakeStairsAction(Action):
         Take the stairs, if any exists at the entity's location.
         """
         if (self.entity.x, self.entity.y) == self.engine.game_map.downstairs_location:
-            self.engine.game_world.generate_floor()
+            self.engine.game_world.descend()
             self.engine.message_log.add_message(
                 "You descend the staircase.", color.descend
+            )
+        elif (self.entity.x, self.entity.y) == self.engine.game_map.upstairs_location:
+            self.engine.game_world.ascend()
+            self.engine.message_log.add_message(
+                "You crawl back up the stairs to the previous level.", color.descend
             )
         else:
             raise exceptions.Impossible("There are no stairs here.")
