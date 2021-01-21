@@ -20,7 +20,7 @@ import input_handlers
 background_image = tcod.image.load("menu_background.png")[:, :, :3]
 
 
-def new_game() -> Engine:
+def new_game(context: tcod.Context) -> Engine:
     """Return a brand new game session as an Engine instance."""
     map_width = 80
     map_height = 43
@@ -31,7 +31,7 @@ def new_game() -> Engine:
 
     player = copy.deepcopy(entity_factories.player)
 
-    engine = Engine(player=player)
+    engine = Engine(player=player, context=context)
 
     engine.game_world = GameWorld(
         engine=engine,
@@ -62,16 +62,20 @@ def new_game() -> Engine:
     return engine
 
 
-def load_game(filename: str) -> Engine:
+def load_game(filename: str, context: tcod.Context) -> Engine:
     """Load an Engine instance from a file."""
     with open(filename, "rb") as f:
         engine = pickle.loads(lzma.decompress(f.read()))
     assert isinstance(engine, Engine)
+    engine.context = context
     return engine
 
 
 class MainMenu(input_handlers.BaseEventHandler):
     """Handle the main menu rendering and input."""
+
+    def __init__(self, context: tcod.Context):
+        self.context = context
 
     def on_render(self, console: tcod.Console) -> None:
         """Render the main menu on a background image."""
@@ -112,13 +116,13 @@ class MainMenu(input_handlers.BaseEventHandler):
             raise SystemExit()
         elif event.sym == tcod.event.K_c:
             try:
-                return input_handlers.MainGameEventHandler(load_game("savegame.sav"))
+                return input_handlers.MainGameEventHandler(load_game("savegame.sav", self.context))
             except FileNotFoundError:
                 return input_handlers.PopupMessage(self, "No saved game to load.")
             except Exception as exc:
                 traceback.print_exc()  # Print to stderr.
                 return input_handlers.PopupMessage(self, f"Failed to load save:\n{exc}")
         elif event.sym == tcod.event.K_n:
-            return input_handlers.MainGameEventHandler(new_game())
+            return input_handlers.MainGameEventHandler(new_game(self.context))
 
         return None

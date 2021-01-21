@@ -91,6 +91,14 @@ class MeleeAction(ActionWithDirection):
             )
 
 
+class ToggleFullscreenAction(Action):
+
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+
+    def perform(self) -> None:
+        self.engine.toggle_fullscreen()
+
 class PickupAction(Action):
     """Pick up an item and add it to the inventory, if there is room for it."""
 

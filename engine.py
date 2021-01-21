@@ -4,7 +4,9 @@ import lzma
 import pickle
 from typing import TYPE_CHECKING
 
+import tcod
 from tcod.console import Console
+from tcod.context import Context
 from tcod.map import compute_fov
 
 import exceptions
@@ -21,11 +23,12 @@ class Engine:
     game_world: GameWorld
 
     def __init__(
-        self, player: Actor,
+        self, player: Actor, context: Context = None
     ):
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
+        self.context = context
 
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.actors) - {self.player}:
@@ -34,6 +37,20 @@ class Engine:
                     entity.ai.perform()
                 except exceptions.Impossible:
                     pass  # Ignore impossible action exceptions from AI.
+
+    def toggle_fullscreen(self) -> None:
+        if self.context is not None:
+            if not self.context.sdl_window_p:
+                return
+            fullscreen = tcod.lib.SDL_GetWindowFlags(self.context.sdl_window_p) & (
+                    tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+            )
+            tcod.lib.SDL_SetWindowFullscreen(
+                self.context.sdl_window_p,
+                0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+            )
+        else:
+            print("engine has no context, cannot toggle fullscreen")
 
     def update_fov(self) -> None:
         """Recompute the visible area based on the players point of view."""
