@@ -30,6 +30,12 @@ class Engine:
         self.player = player
         self.context = context
 
+    # Used for pickling
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['context']
+        return state
+
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.actors) - {self.player}:
             if entity.ai:
