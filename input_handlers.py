@@ -117,12 +117,18 @@ class PopupMessage(BaseEventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Any key returns to the parent handler."""
+        super().ev_keydown()
         return self.parent
 
 
 class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine):
         self.engine = engine
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
+            self.engine.toggle_fullscreen()
+
 
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle events for input handlers with an engine."""
@@ -198,6 +204,7 @@ class HistoryViewer(EventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[MainGameEventHandler]:
         # Fancy conditional movement to make it feel right.
+        super().ev_keydown(event)
         if event.sym in CURSOR_Y_KEYS:
             adjust = CURSOR_Y_KEYS[event.sym]
             if adjust < 0 and self.cursor == 0:
@@ -221,6 +228,7 @@ class HistoryViewer(EventHandler):
 
 class MainGameEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        super().ev_keydown(event)
         action: Optional[Action] = None
 
         key = event.sym
@@ -232,9 +240,6 @@ class MainGameEventHandler(EventHandler):
             tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RSHIFT
         ):
             return actions.TakeStairsAction(player)
-
-        if key == tcod.event.K_RETURN and modifier & tcod.event.KMOD_ALT:
-            self.engine.toggle_fullscreen()
 
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
@@ -278,6 +283,7 @@ class GameOverEventHandler(EventHandler):
         self.on_quit()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
+        super().ev_keydown(event)
         if event.sym == tcod.event.K_ESCAPE:
             self.on_quit()
 
@@ -286,6 +292,7 @@ class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        super().ev_keydown(event)
         """By default any key exits this input handler."""
         if event.sym in {  # Ignore modifier keys.
             tcod.event.K_LSHIFT,
