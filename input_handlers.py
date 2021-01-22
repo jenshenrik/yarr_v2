@@ -234,7 +234,7 @@ class MainGameEventHandler(EventHandler):
             return actions.TakeStairsAction(player)
 
         if key == tcod.event.K_RETURN and modifier & tcod.event.KMOD_ALT:
-            return actions.ToggleFullscreenAction(player)
+            self.engine.toggle_fullscreen()
 
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
