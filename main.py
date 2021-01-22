@@ -7,7 +7,7 @@ import color
 import exceptions
 import input_handlers
 import setup_game
-
+import g
 
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
     """If the current event handler has an active Engine then save it."""
@@ -15,17 +15,6 @@ def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
         handler.engine.save_as(filename)
         print("Game saved.")
 
-def toggle_fullscreen(context: tcod.context.Context) -> None:
-    """Toggle a context window between fullscreen and windowed modes."""
-    if not context.sdl_window_p:
-        return
-    fullscreen = tcod.lib.SDL_GetWindowFlags(context.sdl_window_p) & (
-        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
-    )
-    tcod.lib.SDL_SetWindowFullscreen(
-        context.sdl_window_p,
-        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
-    )
 
 def main() -> None:
     screen_width = 80
@@ -35,7 +24,7 @@ def main() -> None:
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
 
-    handler: input_handlers.BaseEventHandler
+    handler: input_handlers.BaseEventHandler = setup_game.MainMenu()
 
     with tcod.context.new_terminal(
         screen_width,
@@ -45,9 +34,7 @@ def main() -> None:
         vsync=True,
     ) as context:
         root_console = tcod.Console(screen_width, screen_height, order="F")
-        #toggle_fullscreen(context)
-
-        handler = setup_game.MainMenu(context)
+        g.context = context
 
         try:
             while True:

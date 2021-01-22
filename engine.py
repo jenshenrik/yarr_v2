@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import tcod
 from tcod.console import Console
-from tcod.context import Context
 from tcod.map import compute_fov
 
 import exceptions
@@ -23,18 +22,11 @@ class Engine:
     game_world: GameWorld
 
     def __init__(
-        self, player: Actor, context: Context = None
+        self, player: Actor
     ):
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
-        self.context = context
-
-    # Used for pickling
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state['context']
-        return state
 
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.actors) - {self.player}:
@@ -45,18 +37,19 @@ class Engine:
                     pass  # Ignore impossible action exceptions from AI.
 
     def toggle_fullscreen(self) -> None:
-        if self.context is not None:
-            if not self.context.sdl_window_p:
+        import g
+        if g.context is not None:
+            if not g.context.sdl_window_p:
                 return
-            fullscreen = tcod.lib.SDL_GetWindowFlags(self.context.sdl_window_p) & (
+            fullscreen = tcod.lib.SDL_GetWindowFlags(g.context.sdl_window_p) & (
                     tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
             )
             tcod.lib.SDL_SetWindowFullscreen(
-                self.context.sdl_window_p,
+                g.context.sdl_window_p,
                 0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
             )
         else:
-            print("engine has no context, cannot toggle fullscreen")
+            print("No global context set, cannot toggle fullscreen")
 
     def update_fov(self) -> None:
         """Recompute the visible area based on the players point of view."""
