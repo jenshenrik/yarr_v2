@@ -117,18 +117,12 @@ class PopupMessage(BaseEventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Any key returns to the parent handler."""
-        super().ev_keydown()
         return self.parent
 
 
 class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine):
         self.engine = engine
-
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
-        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
-            self.engine.toggle_fullscreen()
-
 
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Handle events for input handlers with an engine."""
@@ -241,6 +235,11 @@ class MainGameEventHandler(EventHandler):
         ):
             return actions.TakeStairsAction(player)
 
+        # If fullscreen was toggled, keep input handler active
+        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
+            self.engine.toggle_fullscreen()
+            return None
+
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
@@ -266,7 +265,7 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_c:
             return CharacterScreenEventHandler(self.engine)
 
-        elif key == tcod.event.K_SLASH:
+        elif key == tcod.event.K_m:
             return LookHandler(self.engine)
 
         return action
@@ -292,7 +291,6 @@ class AskUserEventHandler(EventHandler):
     """Handles user input for actions which require special input."""
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        super().ev_keydown(event)
         """By default any key exits this input handler."""
         if event.sym in {  # Ignore modifier keys.
             tcod.event.K_LSHIFT,
@@ -361,6 +359,12 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             x=x + 1, y=y + 5, string=f"Defense: {self.engine.player.fighter.defense}"
         )
 
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        # If fullscreen was toggled, keep input handler active
+        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
+            self.engine.toggle_fullscreen()
+            return None
+        return super().ev_keydown(event)
 
 class LevelUpEventHandler(AskUserEventHandler):
     TITLE = "Level Up"
@@ -407,6 +411,10 @@ class LevelUpEventHandler(AskUserEventHandler):
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
+
+        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
+            self.engine.toggle_fullscreen()
+            return None
 
         if index <= index <= 2:
             if index == 0:
@@ -485,6 +493,10 @@ class InventoryEventHandler(AskUserEventHandler):
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
+
+        if event.sym == tcod.event.K_RETURN and event.mod & tcod.event.KMOD_ALT:
+            self.engine.toggle_fullscreen()
+            return None
 
         if 0 <= index <= 26:
             try:
