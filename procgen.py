@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
+from datetime import datetime
 
 import tcod
 
@@ -82,11 +83,12 @@ def get_entities_at_random(
 
 
 class RectangularRoom:
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(self, x: int, y: int, width: int, height: int, node = None):
         self.x1 = x
         self.y1 = y
         self.x2 = x + width
         self.y2 = y + height
+        self.node = node
 
     @property
     def center(self) -> Tuple[int, int]:
@@ -166,9 +168,68 @@ def generate_dungeon(
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
-    rooms: List[RectangularRoom] = []
+    #rooms = naiveGenerate(dungeon, max_rooms, room_min_size, room_max_size)
+    rooms = bspGenerate(dungeon, player, engine, max_rooms, room_min_size, room_max_size, 1)
+    player.place(*rooms[0].center, dungeon)
+    print_dungeon(dungeon)
 
-    center_of_last_room = (0, 0)
+    for room in rooms:
+        place_entities(room, dungeon, engine.game_world.current_floor)
+
+    last_room = rooms[len(rooms) - 1]
+    dungeon.tiles[last_room.center] = tile_types.down_stairs
+    dungeon.downstairs_location = last_room.center
+    return dungeon
+
+def print_dungeon(dungeon: GameMap):
+    now = datetime.now()
+    filename = now.strftime("%Y-%m-%d-%H:%M:%S.map")
+    #with open(filename, "w") as writer:
+    for row in dungeon.tiles.T:
+        for col in row:
+            print(chr(col[2][0]),end="")
+        print()
+    print(filename)
+
+def bspGenerate(dungeon: GameMap, player, engine: Engine, max_rooms: int, room_min_size: int, room_max_size: int, padding: int):
+    bsp = tcod.bsp.BSP(x=0, y=0, width=dungeon.width-1, height=dungeon.height-1)
+    bsp.split_recursive(
+        depth=5,
+        min_width=room_min_size + padding,
+        min_height=room_min_size + padding,
+        max_horizontal_ratio=1.1,
+        max_vertical_ratio=1.1
+    )
+    rooms = []
+    for node in bsp.post_order():
+        if node.children:
+            node1, node2 = node.children
+            room1 = getRoomForNode(node1, rooms)
+            room2 = getRoomForNode(node2, rooms)
+            for x, y in tunnel_between(room1.center, room2.center):
+                dungeon.tiles[x, y] = tile_types.floor
+
+        else:
+            new_room = createRoom(node, room_min_size, room_max_size)
+            dungeon.tiles[new_room.inner] = tile_types.floor
+            player.place(*new_room.center, dungeon)
+            rooms.append(new_room)
+    return rooms
+
+def getRoomForNode(node, rooms):
+    return next((room for room in rooms if room.node.x == node.x and room.node.y == node.y), None)
+
+def createRoom(node, room_min_size, room_max_size):
+    """Create a room inside a BSP tree node. Assumes node is large enough
+    to fit minimum room size."""
+    room_width = random.randint(room_min_size, min(node.width, room_max_size))
+    room_height = random.randint(room_min_size, min(node.height, room_max_size))
+    new_x = random.randint(node.x, node.x + (node.width - room_width))
+    new_y = random.randint(node.y, node.y + (node.height - room_height))
+    return RectangularRoom(new_x, new_y, room_width, room_height, node)
+
+def naiveGenerate(dungeon: GameMap, max_rooms: int, room_min_size: int, room_max_size: int):
+    rooms: List[RectangularRoom] = []
 
     for r in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
@@ -184,20 +245,10 @@ def generate_dungeon(
         # Dig out the room's inner area
         dungeon.tiles[new_room.inner] = tile_types.floor
 
-        if len(rooms) == 0:
-            # this is the first room, and the starting point
-            player.place(*new_room.center, dungeon)
-        else:
-            # Dig out a tunnel between this room and the previous one
+        # Dig out a tunnel between this room and the previous one
+        if len(rooms) > 1:
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
-            center_of_last_room = new_room.center
-
-        place_entities(new_room, dungeon, engine.game_world.current_floor)
-
-        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
-        dungeon.downstairs_location = center_of_last_room
         rooms.append(new_room)
-
-    return dungeon
+    return rooms
