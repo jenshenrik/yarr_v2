@@ -22,16 +22,18 @@ background_image = tcod.image.load("menu_background.png")[:, :, :3]
 
 def new_game() -> Engine:
     """Return a brand new game session as an Engine instance."""
-    map_width = 80
-    map_height = 43
+    camera_width = 80
+    camera_height = 43
+    map_width = 100
+    map_height = 60
 
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
+    room_max_size = 20
+    room_min_size = 8
+    max_rooms = 50
 
     player = copy.deepcopy(entity_factories.player)
 
-    engine = Engine(player=player)
+    engine = Engine(player=player, camera_width=camera_width, camera_height=camera_height, map_width=map_width, map_height=map_height)
 
     engine.game_world = GameWorld(
         engine=engine,

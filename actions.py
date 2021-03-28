@@ -150,7 +150,7 @@ class MovementAction(ActionWithDirection):
             raise exceptions.Impossible("That way is blocked.")
 
         self.entity.move(self.dx, self.dy)
-
+        self.engine.camera.update(self.entity)
 
 class DropItem(ItemAction):
     def perform(self) -> None:

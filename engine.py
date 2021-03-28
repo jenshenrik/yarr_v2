@@ -8,6 +8,7 @@ import tcod
 from tcod.console import Console
 from tcod.map import compute_fov
 
+from camera import Camera
 import exceptions
 from message_log import MessageLog
 import render_functions
@@ -22,11 +23,17 @@ class Engine:
     game_world: GameWorld
 
     def __init__(
-        self, player: Actor
+        self, player: Actor,
+            camera_width: int,
+            camera_height: int,
+            map_width: int,
+            map_height: int
     ):
         self.message_log = MessageLog()
         self.mouse_location = (0, 0)
         self.player = player
+        self.camera = Camera(0, 0, camera_width, camera_height, map_width, map_height)
+        self.camera.update(player)
 
     def handle_enemy_turns(self) -> None:
         for entity in set(self.game_map.actors) - {self.player}:
@@ -62,7 +69,7 @@ class Engine:
         self.game_map.explored |= self.game_map.visible
 
     def render(self, console: Console) -> None:
-        self.game_map.render(console)
+        self.game_map.render(console, self.camera)
 
         self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
