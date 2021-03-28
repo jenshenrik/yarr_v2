@@ -243,6 +243,7 @@ class MainGameEventHandler(EventHandler):
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]
             action = BumpAction(player, dx, dy)
+            self.engine.camera.update(player)
 
         elif key in WAIT_KEYS:
             action = WaitAction(player)
