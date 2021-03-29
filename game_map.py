@@ -81,6 +81,7 @@ class GameMap:
         x_upper = camera.x + camera.width
         y_lower = camera.y
         y_upper = camera.y + camera.height
+        camera.update(self.engine.player)
         console.tiles_rgb[0 : camera.width, 0 : camera.height] = np.select(
             condlist=[self.visible, self.explored],
             choicelist=[self.tiles["light"], self.tiles["dark"]],
@@ -94,7 +95,6 @@ class GameMap:
             # Only print entities that are in the FOV
             if self.visible[entity.x, entity.y]:
                 x, y = camera.apply(entity.x, entity.y)
-                print(f"{entity.name} ({entity.x},{entity.y}) mapped to ({x},{y}) in camera")
                 console.print(
                     x=x, y=y, string=entity.char, fg=entity.color
                 )

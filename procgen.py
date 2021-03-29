@@ -189,7 +189,6 @@ def print_dungeon(dungeon: GameMap):
         for col in row:
             print(chr(col[2][0]),end="")
         print()
-    print(filename)
 
 def bspGenerate(dungeon: GameMap, player, engine: Engine, max_rooms: int, room_min_size: int, room_max_size: int, padding: int):
     bsp = tcod.bsp.BSP(x=0, y=0, width=dungeon.width-1, height=dungeon.height-1)
