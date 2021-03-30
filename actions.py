@@ -75,7 +75,6 @@ class MeleeAction(ActionWithDirection):
         to_hit = self.entity.roll_to_hit()
         target_ac = target.ac
         roll_desc = f"{to_hit} vs. {target_ac}"
-        damage = self.entity.fighter.power - target.fighter.defense
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if self.entity is self.engine.player:
@@ -84,16 +83,11 @@ class MeleeAction(ActionWithDirection):
             attack_color = color.enemy_atk
 
         if to_hit >= target_ac:
-
-            if damage > 0:
-                self.engine.message_log.add_message(
-                    f"{attack_desc} for {damage} hit points ({roll_desc}).", attack_color
-                )
-                target.fighter.hp -= damage
-            else:
-                self.engine.message_log.add_message(
-                    f"{attack_desc} but does no damage ({roll_desc}).", attack_color
-                )
+            damage = self.entity.attack_dmg
+            self.engine.message_log.add_message(
+                f"{attack_desc} for {damage} hit points ({roll_desc}).", attack_color
+            )
+            target.fighter.hp -= damage
         else:
             self.engine.message_log.add_message(f"{attack_desc} but misses ({roll_desc}).", attack_color)
 

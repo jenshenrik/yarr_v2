@@ -16,16 +16,20 @@ class Equippable(BaseComponent):
         self,
         equipment_type: EquipmentType,
         power_bonus: int = 0,
-        defense_bonus: int = 0,
+        damage_die: int = 6,
+        damage_die_count: int = 1,
+        ac: int = 0,
     ):
         self.equipment_type = equipment_type
         self.power_bonus = power_bonus
-        self.defense_bonus = defense_bonus
+        self.ac = ac
+        self.damage_die = damage_die
+        self.damage_die_count = damage_die_count
 
 
 class Dagger(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=2)
+        super().__init__(equipment_type=EquipmentType.WEAPON, damage_die=4)
 
 
 class Sword(Equippable):
@@ -33,11 +37,15 @@ class Sword(Equippable):
         super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=4)
 
 
+class Scimitar(Equippable):
+    def __init__(self) -> None:
+        super().__init__(equipment_type=EquipmentType.WEAPON, damage_die=6)
+
 class LeatherArmor(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=1)
+        super().__init__(equipment_type=EquipmentType.ARMOR, ac=11)
 
 
 class ChainMail(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=3)
+        super().__init__(equipment_type=EquipmentType.ARMOR, ac=3)

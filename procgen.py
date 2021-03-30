@@ -34,7 +34,7 @@ item_chances: Dict[int, List[Tuple[Entity, int]]] = {
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],
+    0: [(entity_factories.spawn_goblin(), 80)],
     3: [(entity_factories.troll, 15)],
     5: [(entity_factories.troll, 30)],
     7: [(entity_factories.troll, 60)],
@@ -211,7 +211,6 @@ def bspGenerate(dungeon: GameMap, player, engine: Engine, max_rooms: int, room_m
         else:
             new_room = createRoom(node, room_min_size, room_max_size)
             dungeon.tiles[new_room.inner] = tile_types.floor
-            player.place(*new_room.center, dungeon)
             rooms.append(new_room)
     return rooms
 

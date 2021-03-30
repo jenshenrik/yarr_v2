@@ -100,7 +100,8 @@ class Actor(Entity):
         fighter: Fighter,
         inventory: Inventory,
         level: Level,
-        strength: int,
+        strength: int = 10,
+        dexterity: int = 10,
     ):
         super().__init__(
             x=x,
@@ -122,6 +123,7 @@ class Actor(Entity):
         self.level = level
         self.level.parent = self
         self.strength = strength
+        self.dexterity = dexterity
 
     @property
     def is_alive(self) -> bool:
@@ -134,7 +136,6 @@ class Actor(Entity):
     def roll_to_hit(self):
         die = random.randint(1, 20)
         total = die + self.str_bonus
-        print(f"{self.name} rolls {total} ({die} + {self.str_bonus}) to hit")
         return total
 
     @property
@@ -142,8 +143,18 @@ class Actor(Entity):
         return self.get_ability_bonus(self.strength)
 
     @property
+    def dex_bonus(self):
+        return self.get_ability_bonus(self.dexterity)
+
+    @property
     def ac(self):
-        return 10
+        from_equipment = self.equipment.weapon.equippable.ac + self.equipment.armor.equippable.ac
+        return self.dex_bonus + from_equipment
+
+    @property
+    def attack_dmg(self):
+        die = self.equipment.weapon.equippable.damage_die
+        return random.randint(1, die) + self.str_bonus
 
 
 class Item(Entity):

@@ -6,6 +6,8 @@ from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
 
+import copy
+
 player = Actor(
     char="@",
     color=(255, 255, 255),
@@ -18,17 +20,19 @@ player = Actor(
     strength=12
 )
 
-orc = Actor(
-    char="o",
+goblin = Actor(
+    char="g",
     color=(63, 127, 63),
-    name="Orc",
+    name="Goblin",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),
+    fighter=Fighter(hp=7, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
-    strength=10
+    strength=8,
+    dexterity=14
 )
+
 troll = Actor(
     char="T",
     color=(0, 127, 0),
@@ -70,6 +74,8 @@ dagger = Item(
     char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
 )
 sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword())
+scimitar = Item(char="/", color=(0, 191, 255), name="Scimitar", equippable=equippable.Scimitar())
+
 leather_armor = Item(
     char="[",
     color=(139, 69, 19),
@@ -79,3 +85,16 @@ leather_armor = Item(
 chain_mail = Item(
     char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail()
 )
+
+def spawn_goblin() -> Actor:
+    g = copy.deepcopy(goblin)
+    armor = copy.deepcopy(leather_armor)
+    weapon = copy.deepcopy(scimitar)
+    give_and_equip_item(g, armor)
+    give_and_equip_item(g, weapon)
+    return g
+
+def give_and_equip_item(actor: Actor, item: Item):
+    actor.inventory.items.append(item)
+    item.parent = actor.inventory
+    actor.equipment.toggle_equip(item, add_message=False)
