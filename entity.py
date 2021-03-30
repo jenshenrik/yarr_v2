@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import math
+import random
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
@@ -99,6 +100,7 @@ class Actor(Entity):
         fighter: Fighter,
         inventory: Inventory,
         level: Level,
+        strength: int,
     ):
         super().__init__(
             x=x,
@@ -119,11 +121,29 @@ class Actor(Entity):
         self.inventory.parent = self
         self.level = level
         self.level.parent = self
+        self.strength = strength
 
     @property
     def is_alive(self) -> bool:
         """Returns True as long as this actor can perform actions."""
         return bool(self.ai)
+
+    def get_ability_bonus(self, ability_value: int):
+        return math.floor((ability_value - 10) / 2)
+
+    def roll_to_hit(self):
+        die = random.randint(1, 20)
+        total = die + self.str_bonus
+        print(f"{self.name} rolls {total} ({die} + {self.str_bonus}) to hit")
+        return total
+
+    @property
+    def str_bonus(self):
+        return self.get_ability_bonus(self.strength)
+
+    @property
+    def ac(self):
+        return 10
 
 
 class Item(Entity):

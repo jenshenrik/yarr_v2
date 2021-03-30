@@ -72,6 +72,9 @@ class MeleeAction(ActionWithDirection):
         if not target:
             raise exceptions.Impossible("Nothing to attack.")
 
+        to_hit = self.entity.roll_to_hit()
+        target_ac = target.ac
+        roll_desc = f"{to_hit} vs. {target_ac}"
         damage = self.entity.fighter.power - target.fighter.defense
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
@@ -80,15 +83,19 @@ class MeleeAction(ActionWithDirection):
         else:
             attack_color = color.enemy_atk
 
-        if damage > 0:
-            self.engine.message_log.add_message(
-                f"{attack_desc} for {damage} hit points.", attack_color
-            )
-            target.fighter.hp -= damage
+        if to_hit >= target_ac:
+
+            if damage > 0:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} for {damage} hit points ({roll_desc}).", attack_color
+                )
+                target.fighter.hp -= damage
+            else:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} but does no damage ({roll_desc}).", attack_color
+                )
         else:
-            self.engine.message_log.add_message(
-                f"{attack_desc} but does no damage.", attack_color
-            )
+            self.engine.message_log.add_message(f"{attack_desc} but misses ({roll_desc}).", attack_color)
 
 
 class PickupAction(Action):
