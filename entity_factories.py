@@ -14,7 +14,7 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=30, base_defense=1, base_power=2),
+    fighter=Fighter(hp=30),
     inventory=Inventory(capacity=26),
     level=Level(level_up_base=200),
     strength=12
@@ -26,7 +26,7 @@ goblin = Actor(
     name="Goblin",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=7, base_defense=0, base_power=3),
+    fighter=Fighter(hp=7),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
     strength=8,
@@ -39,7 +39,7 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),
+    fighter=Fighter(hp=16),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100),
     strength=15

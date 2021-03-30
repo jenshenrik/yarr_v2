@@ -73,7 +73,7 @@ class MeleeAction(ActionWithDirection):
             raise exceptions.Impossible("Nothing to attack.")
 
         to_hit = self.entity.roll_to_hit()
-        target_ac = target.ac
+        target_ac = target.fighter.ac
         roll_desc = f"{to_hit} vs. {target_ac}"
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
@@ -83,7 +83,7 @@ class MeleeAction(ActionWithDirection):
             attack_color = color.enemy_atk
 
         if to_hit >= target_ac:
-            damage = self.entity.attack_dmg
+            damage = self.entity.fighter.attack_dmg
             self.engine.message_log.add_message(
                 f"{attack_desc} for {damage} hit points ({roll_desc}).", attack_color
             )

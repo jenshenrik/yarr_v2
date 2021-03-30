@@ -146,16 +146,6 @@ class Actor(Entity):
     def dex_bonus(self):
         return self.get_ability_bonus(self.dexterity)
 
-    @property
-    def ac(self):
-        from_equipment = self.equipment.weapon.equippable.ac + self.equipment.armor.equippable.ac
-        return self.dex_bonus + from_equipment
-
-    @property
-    def attack_dmg(self):
-        die = self.equipment.weapon.equippable.damage_die
-        return random.randint(1, die) + self.str_bonus
-
 
 class Item(Entity):
     def __init__(

@@ -353,10 +353,10 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             string=f"XP for next level: {self.engine.player.level.experience_to_next_level}",
         )
         console.print(
-            x=x + 1, y=y + 4, string=f"Attack: {self.engine.player.fighter.power}"
+            x=x + 1, y=y + 4, string=f"Strength: {self.engine.player.strength} (+{self.engine.player.str_bonus})"
         )
         console.print(
-            x=x + 1, y=y + 5, string=f"Defense: {self.engine.player.fighter.defense}"
+            x=x + 1, y=y + 5, string=f"Dexterity: {self.engine.player.dexterity} (+{self.engine.player.dex_bonus})"
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -399,12 +399,12 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1,
             y=5,
-            string=f"b) Strength (+1 attack, from {self.engine.player.fighter.power})",
+            string=f"b) Strength (from {self.engine.player.strength})",
         )
         console.print(
             x=x + 1,
             y=6,
-            string=f"c) Agility (+1 defense, from {self.engine.player.fighter.defense})",
+            string=f"c) Dexterity (from {self.engine.player.dexterity})",
         )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -420,9 +420,9 @@ class LevelUpEventHandler(AskUserEventHandler):
             if index == 0:
                 player.level.increase_max_hp()
             elif index == 1:
-                player.level.increase_power()
+                player.level.increase_strength()
             else:
-                player.level.increase_defense()
+                player.level.increase_dexterity()
         else:
             self.engine.message_log.add_message("Invalid entry.", color.invalid)
             return None

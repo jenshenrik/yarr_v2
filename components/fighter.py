@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import color
+import random
 from components.base_component import BaseComponent
 from render_order import RenderOrder
 
@@ -13,11 +14,9 @@ if TYPE_CHECKING:
 class Fighter(BaseComponent):
     parent: Actor
 
-    def __init__(self, hp: int, base_defense: int, base_power: int):
+    def __init__(self, hp: int):
         self.max_hp = hp
         self._hp = hp
-        self.base_defense = base_defense
-        self.base_power = base_power
 
     @property
     def hp(self) -> int:
@@ -30,26 +29,14 @@ class Fighter(BaseComponent):
             self.die()
 
     @property
-    def defense(self) -> int:
-        return self.base_defense + self.defense_bonus
+    def attack_dmg(self):
+        die = self.parent.equipment.weapon.equippable.damage_die
+        return random.randint(1, die) + self.parent.str_bonus
 
     @property
-    def power(self) -> int:
-        return self.base_power + self.power_bonus
-
-    @property
-    def defense_bonus(self) -> int:
-        if self.parent.equipment:
-            return self.parent.equipment.defense_bonus
-        else:
-            return 0
-
-    @property
-    def power_bonus(self) -> int:
-        if self.parent.equipment:
-            return self.parent.equipment.power_bonus
-        else:
-            return 0
+    def ac(self):
+        from_equipment = self.parent.equipment.weapon.equippable.ac + self.parent.equipment.armor.equippable.ac
+        return self.parent.dex_bonus + from_equipment
 
     def die(self) -> None:
         if self.engine.player is self.parent:
