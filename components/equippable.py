@@ -32,9 +32,9 @@ class Dagger(Equippable):
         super().__init__(equipment_type=EquipmentType.WEAPON, damage_die=4)
 
 
-class Sword(Equippable):
+class Shortsword(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=4)
+        super().__init__(equipment_type=EquipmentType.WEAPON, damage_die=6)
 
 
 class Scimitar(Equippable):
@@ -48,4 +48,4 @@ class LeatherArmor(Equippable):
 
 class ChainMail(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, ac=3)
+        super().__init__(equipment_type=EquipmentType.ARMOR, ac=16)
