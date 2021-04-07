@@ -48,8 +48,8 @@ troll = Actor(
 health_potion = Item(
     char="!",
     color=(127, 0, 255),
-    name="Health Potion",
-    consumable=consumable.HealingConsumable(amount=4),
+    name="Potion of Healing",
+    consumable=consumable.HealingConsumable(die=4, number_of_dice=2, bonus=2),
 )
 confusion_scroll = Item(
     char="~",
@@ -73,7 +73,7 @@ lightning_scroll = Item(
 dagger = Item(
     char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
 )
-sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword())
+sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Shortsword())
 scimitar = Item(char="/", color=(0, 191, 255), name="Scimitar", equippable=equippable.Scimitar())
 
 leather_armor = Item(

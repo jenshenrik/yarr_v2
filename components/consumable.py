@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional, TYPE_CHECKING
+import random
 
 import actions
 import color
@@ -75,12 +76,19 @@ class ConfusionConsumable(Consumable):
 
 
 class HealingConsumable(Consumable):
-    def __init__(self, amount: int):
-        self.amount = amount
+    def __init__(self, die: int, number_of_dice: int, bonus: int = 0):
+        self.die = die
+        self.number_of_dice = number_of_dice
+        self.bonus = bonus
 
     def activate(self, action: actions.ItemAction) -> None:
         consumer = action.entity
-        amount_recovered = consumer.fighter.heal(self.amount)
+
+        amount = self.bonus
+        for i in range(self.number_of_dice):
+            amount += random.randint(1, self.die)
+
+        amount_recovered = consumer.fighter.heal(amount)
 
         if amount_recovered > 0:
             self.engine.message_log.add_message(
