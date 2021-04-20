@@ -28,7 +28,7 @@ goblin = Actor(
     equipment=Equipment(),
     fighter=Fighter(hp=7),
     inventory=Inventory(capacity=0),
-    level=Level(xp_given=35),
+    level=Level(xp_given=45),
     strength=8,
     dexterity=14
 )
