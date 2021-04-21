@@ -28,9 +28,22 @@ goblin = Actor(
     equipment=Equipment(),
     fighter=Fighter(hp=7),
     inventory=Inventory(capacity=0),
-    level=Level(xp_given=45),
+    level=Level(xp_given=50),
     strength=8,
     dexterity=14
+)
+
+orc = Actor(
+    char="O",
+    color=(0, 127, 0),
+    name="Orc",
+    ai_cls=HostileEnemy,
+    equipment=Equipment(),
+    fighter=Fighter(hp=15),
+    inventory=Inventory(capacity=0),
+    level=Level(xp_given=100),
+    strength=16,
+    dexterity=12
 )
 
 troll = Actor(
@@ -75,6 +88,7 @@ dagger = Item(
 )
 sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Shortsword())
 scimitar = Item(char="/", color=(0, 191, 255), name="Scimitar", equippable=equippable.Scimitar())
+greataxe= Item(char="P", color=(0, 191, 255), name="Greataxe", equippable=equippable.Greataxe())
 
 leather_armor = Item(
     char="[",
@@ -82,9 +96,25 @@ leather_armor = Item(
     name="Leather Armor",
     equippable=equippable.LeatherArmor(),
 )
+
+hide_armor = Item(
+    char="[",
+    color=(139, 69, 19),
+    name="Hide Armor",
+    equippable=equippable.HideArmor(),
+)
+
 chain_mail = Item(
     char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail()
 )
+
+def spawn_orc() -> Actor:
+    o = copy.deepcopy(orc)
+    armor = copy.deepcopy(hide_armor)
+    weapon = copy.deepcopy(greataxe)
+    give_and_equip_item(o, armor)
+    give_and_equip_item(o, weapon)
+    return o
 
 def spawn_goblin() -> Actor:
     g = copy.deepcopy(goblin)
