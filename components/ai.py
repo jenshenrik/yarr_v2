@@ -99,7 +99,7 @@ class ConfusedEnemy(BaseAI):
             # Pick a random direction
             direction_x, direction_y = random.choice(
                 [
-                    (-1.0 - 1),  # NW
+                    (-1, - 1),  # NW
                     (0, -1),  # N
                     (1, -1),  # NE
                     (-1, 0),  # W
